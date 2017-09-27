@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Board</title>
+    <!-- CSS Style sheet -->
+    <style>
+        div {
+            box-sizing:             border-box;
+            display:                table-cell;
+        }
+
+        textarea {
+            box-sizing:             border-box;
+            display:                table-cell;
+            background-color:       aliceblue;
+            min-height:             60px;
+            font-family:            '맑은 고딕';
+        }
+
+        td {
+            box-sizing:             border-box;
+        }
+
+        #board_main {
+            width:                  800px;
+            margin-left:            auto;
+            margin-right:           auto;
+            display:                table;
+        }
+
+        .title {
+            width:                  800px;
+            border-top:             3px double darkgray;
+            border-bottom:          3px double darkgray;
+            border-left:            none;
+            border-right:           none;
+            background-color:       ghostwhite;
+            height:                 75px;
+            line-height:            75px;
+            float:                  left;
+            font-size:              x-large;
+            text-align:             center;
+            resize:                 none;
+            overflow:               hidden;
+        }
+
+        .info_bar {
+            border-bottom:          1px solid silver;
+            height:                 40px;
+            line-height:            40px;
+            float:                  left;
+            font-size:              small;
+            text-align:             center;
+        }
+
+        #writer {
+            width:                  200px;
+        }
+
+        #views {
+            width:                  100px;
+        }
+
+        #update_time {
+            width:                  300px;
+        }
+
+
+        #control_bar {
+            border-bottom:          1px solid silver;
+            width:                  200px;
+            height:                 40px;
+            line-height:            40px;
+            float:                  right;
+            text-align:             center;
+        }
+
+        .content {
+            border:                 none;
+            width:                  800px;
+            min-height:             300px;
+            margin-top:             10px;
+            margin-bottom:          10px;
+            padding:                5px;
+            float:                  left;
+            resize:                 none;
+            overflow-y:             auto;
+        }
+
+        #reply_write {
+            box-sizing:             border-box;
+            border:                 3px solid gray;
+            border-radius:          10px;
+            margin-right:           20px;
+            padding:                5px;
+            width:                  680px;
+            height:                 100px;
+            float:                  left;
+            resize:                 none;
+        }
+
+        #send_reply {
+            border:                 none;
+            border-radius:          5px;
+            background:             royalblue;
+            width:                  100px;
+            height:                 100px;
+            line-height:            100px;
+            float:                  right;
+            text-align:             center;
+            font-size:              x-large;
+            color:                  white;
+        }
+
+        #send_reply:hover {
+            background:             powderblue;
+            user-select:            none;
+            cursor:                 pointer;
+        }
+
+        #reply_table {
+            border-width:           3px 0px;
+            border-style:           double;
+            border-color:           silver;
+            float:                  left;
+            width:                  800px;
+            margin-top:             10px;
+            margin-bottom:          10px;
+        }
+
+        #back {
+            border:                 none;
+            border-radius:          5px;
+            background:             royalblue;
+            width:                  180px;
+            height:                 90px;
+            margin:                 5px 10px;
+            float:                  left;
+            line-height:            90px;
+            text-align:             center;
+            font-size:              x-large;
+            color:                  white;
+        }
+
+        #back:hover {
+            background:             powderblue;
+            user-select:            none;
+            cursor:                 pointer;
+        }
+
+        .board_link {
+            border-style:           solid;
+            border-image:           linear-gradient(to right, silver 0%, transparent 100%);
+            border-image-width:     3px;
+            border-image-slice:     1;
+            width:                  580px;
+            height:                 40px;
+            margin-left:            20px;
+            margin-top:             5px;
+            margin-bottom:          5px;
+            float:                  right;
+            line-height:            34px;
+            padding-left:           10px;
+        }
+
+        .controlButton {
+            border:                 none;
+            background-color:       royalblue;
+            width:                  80px;
+            height:                 25px;
+            margin-right:           5px;
+            margin-left:            5px;
+            color:                  white;
+        }
+
+        .controlButton:hover {
+            background-color:       powderblue;
+            cursor:                 pointer;
+        }
+
+        .controlButton:active {
+            background-color:       silver;
+        }
+
+        .clickable {
+            cursor:                 pointer;
+            user-select:            none;
+        }
+
+        .clickable:hover {
+            color:                  red;
+        }
+
+        .ReplyTableHead {
+            border:                 none;
+            padding-left:           10px;
+            height:                 40px;
+            line-height:            40px;
+            font-weight:            bold;
+            color:                  royalblue;
+        }
+
+        .ReplyTableBody {
+            border-width:           1px 0px;
+            border-style:           solid;
+            border-color:           silver;
+            display:                table-cell;
+            width:                  800px;
+        }
+
+        .ReplyWriter {
+            border-right:           1px dotted silver;
+            border-bottom:          1px dotted silver;
+            display:                table-cell;
+            width:                  250px;
+            height:                 40px;
+            line-height:            40px;
+            padding-left:           10px;
+            float:                  left;
+        }
+
+        .ReplyWriteTime {
+            border-bottom:          1px dotted silver;
+            display:                table-cell;
+            width:                  240px;
+            height:                 40px;
+            line-height:            40px;
+            padding-right:          10px;
+            text-align:             right;
+            float:                  left;
+        }
+
+        .ReplyModifyBar {
+            border-bottom:          1px dotted silver;
+            display:                table-cell;
+            width:                  300px;
+            height:                 40px;
+            line-height:            30px;
+            text-align:             center;
+            float:                  left;
+        }
+
+        .ReplyContent {
+            box-sizing:             border-box;
+            border:                 none;
+            display:                table-cell;
+            width:                  790px;
+            padding:                5px 10px;
+            float:                  left;
+            resize:                 none;
+            overflow-y:             auto;
+        }
+    </style>
+    <!-- JavaScript -->
+    <script language="JavaScript">
+        /*
+                ## Read Board
+                Content     : read and modify board
+                Creater     : 2-WDJ 1401213 Seungmin Lee
+                Date        : Sept 22th, 2017 18:27
+         */
+
+        const CONTROL_ROOT_URL  = location.protocol + '//' + location.host + '/NewBoard/control/';
+        const BOARD_LIST_URL    = location.origin + '/NewBoard/view/list.html';
+        const VIEW_BOARD_URL    = location.origin + location.pathname;
+
+        // 01. read board id data that included in URL
+        function getBoardId() {
+            var dataStrAry  = location.search.replace('?', '').split('=');
+            return dataStrAry[1];
+        }
+
+        // 02. define object that contain information for communicate
+        function CommunicationObject() {
+            // 01) define variable
+            this.serverUrl           = '';                              // server URL
+            this.communicateFunction = '';                              // define function that process message received at PHP server
+            this.sendData            = new Object();                    // define variable that send to PHP
+        }
+
+        // 03. communicate at server
+        function communicateServer(argCommunicateObj) {
+            // 01) check argument (if argument isn't communicateObject, end function)
+            if(!(argCommunicateObj instanceof CommunicationObject)) {
+                return;
+            }
+
+            // 02) ready communicate
+            var url     = argCommunicateObj.serverUrl;
+            var xhr     = new XMLHttpRequest();
+
+            xhr.onreadystatechange = function() {
+                if(xhr.readyState == 4 && xhr.status == 200) {
+                    argCommunicateObj.communicateFunction(xhr.responseText);
+                }
+            }
+
+            // 03) communicate at server
+            xhr.open("POST", url, true);
+            xhr.setRequestHeader("Content-Type",
+                "application/x-www-form-urlencoded;charset=UTF-8");         // set header
+            xhr.send(arrayDataToString(argCommunicateObj.sendData));
+        }
+
+        // 04. refine message array to string
+        function arrayDataToString(argAry) {
+            // 01. check data type of argument
+            if(!(argAry instanceof Object)) {
+                return '';
+            }
+
+            // 02. set variable
+            var result = new Array();
+
+            // 03. refine array to string
+            for(let key in argAry) {
+                let dataStr = key + '=' + argAry[key];
+                result.push(dataStr);
+            }
+
+            // 04. return value
+            return result.join('&');
+        }
+
+        // 05. check login
+        function checkLogin() {
+            // 01. set variable
+            var commObj = new CommunicationObject();
+            commObj.serverUrl = CONTROL_ROOT_URL + 'Control_LoginManager.php';
+            commObj.sendData['type'] = 'check';
+
+            // 02. set communicate function
+            commObj.communicateFunction = function(argResponseText) {
+                if(argResponseText == 'false') {
+                    alert('not permitted access route!');
+                    location.replace(BOARD_LIST_URL);
+                }
+            };
+
+            // 03. communicate server
+            communicateServer(commObj);
+        }
+
+        // 06. get board
+        function getBoard() {
+            // 01) set variable
+            var commObj = new CommunicationObject();
+            commObj.serverUrl = CONTROL_ROOT_URL + 'Control_BoardManager.php';
+            commObj.sendData['type']        = 'view';
+            commObj.sendData['board_id']    = getBoardId();
+
+            // 02) set communicate function
+            commObj.communicateFunction = function(argResponseText) {
+                try {
+                    // 2-01) set variable
+                    var titleDiv = document.getElementById('title');
+                    var contentDiv = document.getElementById('content');
+                    var writerDiv = document.getElementById('writer');
+                    var viewsDiv = document.getElementById('views');
+                    var updateTimeDiv = document.getElementById('update_time')
+
+                    // 2-02) parse JSON object
+                    var receiveObj = JSON.parse(argResponseText);
+                    var boardObj = receiveObj.board;
+                    var nextPrevNum = receiveObj.number;
+
+                    // 2-03) set board info
+                    titleDiv.innerText = boardObj.title;
+                    contentDiv.innerHTML = boardObj.content;
+                    writerDiv.appendChild(document.createTextNode('WRITER : ' + boardObj.writer));
+                    viewsDiv.appendChild(document.createTextNode('VIEWS : ' + boardObj.views));
+                    updateTimeDiv.appendChild(document.createTextNode('UPLOAD TIMES : ' + boardObj.upload_time));
+
+                    // 2-04) set button
+                    setButton(receiveObj.modify, nextPrevNum);
+                } catch(e) {
+                    alert('There is no board. Back to the List.');
+                    location.replace(BOARD_LIST_URL);
+                }
+            };
+
+            // 03) communicate server
+            communicateServer(commObj);
+        }
+
+        // 07. set function at button
+        function setButton(argModifyRight, argNextPrevNumber) {
+            // 01. set variable
+            var sendReplyButton = document.getElementById('send_reply');
+            var backButton      = document.getElementById('back');
+            var nextButton      = document.getElementById('next');
+            var prevButton      = document.getElementById('prev');
+
+            // 02. set event
+            backButton.addEventListener('click', function() {
+                location.replace(BOARD_LIST_URL);
+            });
+
+            // 03. set next Button
+            if(argNextPrevNumber.next) {
+                nextButton.addEventListener('click', function() {
+                    location.replace(VIEW_BOARD_URL + '?board_id=' + argNextPrevNumber.next['board_id']);
+                });
+                nextButton.appendChild(document.createTextNode(argNextPrevNumber.next.title));
+                nextButton.classList.add('clickable');
+            } else {
+                nextButton.appendChild(document.createTextNode('none'));
+            }
+
+            // 04. set prev button
+            if(argNextPrevNumber.prev) {
+                prevButton.addEventListener('click', function() {
+                    location.replace(VIEW_BOARD_URL + '?board_id=' + argNextPrevNumber.prev['board_id']);
+                });
+                prevButton.appendChild(document.createTextNode(argNextPrevNumber.prev.title));
+                prevButton.classList.add('clickable');
+            } else {
+                prevButton.appendChild(document.createTextNode('none'));
+            }
+
+            // 05. set modify button
+            if(argModifyRight) {
+                setModifyButtons();
+            }
+
+            // 06. set reply send button
+            sendReplyButton.addEventListener('click', uploadReply);
+        }
+
+        // 08. set update function
+        function updateBoard(argTitle, argContent) {
+            // 01) set variable
+            var commObj = new CommunicationObject();
+            commObj.serverUrl = CONTROL_ROOT_URL + 'Control_BoardWriter.php';
+            commObj.sendData['type']        = 'update';
+            commObj.sendData['id']          = getBoardId();
+            commObj.sendData['title']       = encodeURIComponent(argTitle);
+            commObj.sendData['content']     = encodeURIComponent(argContent);
+
+            // 02) set communicate function
+            commObj.communicateFunction = function(argResponseText) {
+                if(argResponseText == 'true') {
+                    alert('UPDATE SUCCESS!');
+                    location.reload(true);
+                } else {
+                    alert('UPDATE FALSE! Please try again!');
+                    return;
+                }
+            };
+
+            // 03) communicate server
+            communicateServer(commObj);
+        }
+
+        // 09. set delete function
+        function deleteBoard() {
+            // 01) set variable
+            var commObj = new CommunicationObject();
+            commObj.serverUrl = CONTROL_ROOT_URL + 'Control_BoardManager.php';
+            commObj.sendData['type']        = 'delete';
+            commObj.sendData['board_id']    = getBoardId();
+
+            // 02) set communicate function
+            commObj.communicateFunction = function(argResponseText) {
+                if(argResponseText == 'true') {
+                    alert('DELETE SUCCESS!');
+                    location.replace(BOARD_LIST_URL);
+                } else {
+                    alert('DELETE FALSE! Please try again!');
+                    return;
+                }
+            };
+
+            // 03) communicate server
+            communicateServer(commObj);
+        }
+
+        // 10. set modify buttons
+        function setModifyButtons() {
+            // 10-1) set variable
+            var updateButton    = document.createElement('input');
+            var deleteButton    = document.createElement('input');
+            var controlBarDiv   = document.getElementById('control_bar');
+
+            // 10-2) set attribute of update button
+            updateButton.setAttribute('type', 'button');
+            updateButton.setAttribute('value', 'UPDATE');
+            updateButton.classList.add('controlButton');
+
+            // 10-3) set update event
+            updateButton.addEventListener('click', function() {
+                // 10-3-1) set variable
+                var titleTextarea   = document.createElement('textarea');
+                var contentTextarea = document.createElement('textarea')
+                var titleDiv        = document.getElementById('title');
+                var contentDiv      = document.getElementById('content');
+                var controlBarDiv   = document.getElementById('control_bar');
+
+                // 10-3-2) set title attribute
+                titleTextarea.setAttribute('id', 'titleUpdate');
+                titleTextarea.setAttribute('maxlength', '50');
+                titleTextarea.innerHTML = titleDiv.innerText;
+                titleTextarea.classList.add('title');
+
+                // 10-3-2) set content attribute
+                contentTextarea.setAttribute('id', 'contentUpdate');
+                contentTextarea.innerHTML = contentDiv.innerText;
+                contentTextarea.classList.add('content');
+
+                // 10-3-3) replace div to textarea
+                titleDiv.parentNode.replaceChild(titleTextarea, titleDiv);
+                contentDiv.parentNode.replaceChild(contentTextarea, contentDiv);
+
+                // 10-3-4) set update control buttons
+                while(controlBarDiv.hasChildNodes()) {
+                    controlBarDiv.removeChild(controlBarDiv.firstChild);
+                }
+
+                var sendButton      = document.createElement('input');
+                var cancelButton    = document.createElement('input');
+
+                // 10-3-5) set attribute on sendButton and cancelButton
+                sendButton.setAttribute('type', 'button');
+                sendButton.setAttribute('value', 'SEND');
+                sendButton.classList.add('controlButton');
+                sendButton.addEventListener('click', function() {
+                    updateBoard(titleTextarea.value, contentTextarea.value);
+                });
+
+                cancelButton.setAttribute('type', 'button');
+                cancelButton.setAttribute('value', 'CANCEL');
+                cancelButton.classList.add('controlButton');
+                cancelButton.addEventListener('click', function() {
+                    titleTextarea.parentNode.replaceChild(titleDiv, titleTextarea);
+                    contentTextarea.parentNode.replaceChild(contentDiv, contentTextarea);
+
+
+                    // when control bar has children, delete them
+                    while(controlBarDiv.hasChildNodes()) {
+                        controlBarDiv.removeChild(controlBarDiv.firstChild);
+                    }
+                    setModifyButtons();
+                });
+
+                // 10-3-6) append child
+                controlBarDiv.appendChild(sendButton);
+                controlBarDiv.appendChild(cancelButton);
+            });
+
+            // 10-4) set attribute of delete button
+            deleteButton.setAttribute('type', 'button');
+            deleteButton.setAttribute('value', 'DELETE');
+            deleteButton.classList.add('controlButton');
+
+            //
+            deleteButton.addEventListener('click', function() {
+                deleteBoard();
+            });
+
+            // 10-final) append child on control_bar
+            controlBarDiv.appendChild(updateButton);
+            controlBarDiv.appendChild(deleteButton);
+        }
+
+        // 11. get reply list
+        function getReply() {
+            // 01) set variable
+            var commObj         = new CommunicationObject();
+            commObj.serverUrl   = CONTROL_ROOT_URL + 'Control_ReplyManager.php';
+            commObj.sendData['type']        = 'read';
+            commObj.sendData['board_id']    = getBoardId();
+
+            // 02) set communicate function
+            commObj.communicateFunction = function(argResponseText) {
+                if(argResponseText != 'false') {
+                    // 2-01) parse json string
+                    var replyListObj = JSON.parse(argResponseText);
+
+                    // 2-02) create reply table element to reply object
+                    var replyTable = document.getElementById('reply_list');
+                    for(let replyObj of replyListObj.replyList) {
+                        replyTable.appendChild(makeReplyElement(replyObj));
+                    }
+
+                    // 2-03) write number of replies
+                    var replyTableHeadObj   = document.getElementById("numOfReplies");
+                    replyTableHeadObj.appendChild(document.createTextNode(replyListObj.numOfReply));
+                }
+            };
+
+            // 03) communicate server
+            communicateServer(commObj);
+        }
+
+        // 12. send reply data
+        function uploadReply() {
+            // 01) set variable
+            var commObj         = new CommunicationObject();
+            var replyTextarea   = document.getElementById('reply_write');
+
+            // if user doesn't write reply content, finish function
+            if(replyTextarea.value == '') {
+                alert('Please write reply value!');
+                return;
+            }
+
+            commObj.serverUrl   = CONTROL_ROOT_URL + 'Control_ReplyManager.php';
+            commObj.sendData['type']        = 'send';
+            commObj.sendData['board_id']    = getBoardId();
+            commObj.sendData['content']     = encodeURIComponent(replyTextarea.value);
+
+            // 02) set communicate function
+            commObj.communicateFunction = function(argResponseText) {
+                if(argResponseText == 'true') {
+                    alert('REPLY REGISTER SUCCESS!');
+                    location.reload(true);
+                } else {
+                    alert('REGISTER FALSE! Please try again!');
+                    return;
+                }
+            };
+
+            // 03) communicate server
+            communicateServer(commObj);
+        }
+
+        // 13. update reply
+        function updateReply(argReplyId) {
+            // 01) set variable
+            var commObj         = new CommunicationObject();
+            var replyTextarea   = document.getElementById('replyArea' + argReplyId);
+
+            // if user doesn't write reply content, finish function
+            if(replyTextarea.value == '') {
+                alert('Please write reply value!');
+                return;
+            }
+
+            commObj.serverUrl   = CONTROL_ROOT_URL + 'Control_ReplyManager.php';
+            commObj.sendData['type']        = 'update_reply';
+            commObj.sendData['reply_id']    = argReplyId;
+            commObj.sendData['content']     = encodeURIComponent(replyTextarea.value);
+
+            // 02) set communicate function
+            commObj.communicateFunction = function(argResponseText) {
+                if(argResponseText == 'true') {
+                    alert('REPLY UPDATE SUCCESS!');
+                    location.reload(true);
+                } else {
+                    alert('REPLY UPDATE FALSE! Please try again!');
+                    return;
+                }
+            };
+
+            // 03) communicate server
+            communicateServer(commObj);
+        }
+
+        // 14. delete reply
+        function deleteReply(argReplyId) {
+            // 01) set variable
+            var commObj         = new CommunicationObject();
+
+            commObj.serverUrl   = CONTROL_ROOT_URL + 'Control_ReplyManager.php';
+            commObj.sendData['type']        = 'delete_reply';
+            commObj.sendData['reply_id']    = argReplyId;
+
+            // 02) set communicate function
+            commObj.communicateFunction = function(argResponseText) {
+                if(argResponseText == 'true') {
+                    alert('REPLY DELETE SUCCESS!');
+                    location.reload(true);
+                } else {
+                    alert('DELETE FALSE! Please try again!');
+                    return;
+                }
+            };
+
+            // 03) communicate server
+            communicateServer(commObj);
+        }
+
+        // 15. make reply element and append on table
+        function makeReplyElement(argReplyObj) {
+            // 01) set variable
+            var createTableObj  = document.createElement('table');
+            var createTrObj     = document.createElement('tr');
+            var createTdObj     = document.createElement('td');
+
+
+            // 02) create user name div
+            createTdObj.classList.add('ReplyWriter');
+            createTdObj.innerText = argReplyObj.writer;
+            createTrObj.appendChild(createTdObj);
+
+            // 03) create control bar div
+            createTdObj = document.createElement('td');
+            createTdObj.classList.add('ReplyModifyBar');
+            // 03-1) when user has reply modify right, set control button
+            if (argReplyObj.modify) {
+                setReplyModifyButton(createTdObj, argReplyObj.id);
+            }
+            createTrObj.appendChild(createTdObj);
+
+            // 04) create write time div
+            createTdObj = document.createElement('td');
+            createTdObj.classList.add('ReplyWriteTime');
+            createTdObj.innerText = argReplyObj.write_time;
+            createTrObj.appendChild(createTdObj);
+            createTableObj.appendChild(createTrObj);
+
+
+            // 04) create content div
+            createTrObj = document.createElement('tr');
+            createTdObj = document.createElement('td');
+            createTdObj.setAttribute('colspan', '3');
+            createTdObj.classList.add('ReplyContent');
+            createTdObj.innerHTML = argReplyObj.content;
+            createTdObj.setAttribute('id', 'reply' + argReplyObj.id);
+            createTrObj.appendChild(createTdObj);
+            createTableObj.appendChild(createTrObj);
+
+
+            // final. return tr element
+            createTdObj = document.createElement('td');
+            createTrObj = document.createElement('tr');
+            createTdObj.classList.add('ReplyTableBody');
+            createTdObj.appendChild(createTableObj);
+            createTrObj.appendChild(createTdObj);
+            return createTrObj;
+        }
+
+        // 16. set reply modify buttons
+        function setReplyModifyButton(argParentElement, argReplyId) {
+            // 16-01) set update button
+            var buttonObj = document.createElement('input');
+            buttonObj.setAttribute('type', 'button');
+            buttonObj.setAttribute('value', 'UPDATE');
+            buttonObj.classList.add('controlButton');
+
+            // 16-02) set event when update button are pushed
+            buttonObj.addEventListener('click', function() {
+                // 16-02-01) change td to textarea
+                var replyTextarea   = document.createElement('textarea');
+                var replyContent    = document.getElementById('reply' + argReplyId);
+                replyTextarea.setAttribute('id', 'replyArea' + argReplyId);
+                replyTextarea.classList.add('ReplyContent');
+                replyTextarea.innerHTML = replyContent.innerHTML;
+                replyContent.parentNode.replaceChild(replyTextarea, replyContent);
+
+                // 16-02-02) change control bar
+                while(argParentElement.hasChildNodes()) {
+                    argParentElement.removeChild(argParentElement.firstChild);
+                }
+                var sendButton = document.createElement('input');
+                sendButton.setAttribute('type', 'button');
+                sendButton.setAttribute('value', 'SEND');
+                sendButton.classList.add('controlButton');
+                sendButton.addEventListener('click', function() {
+                    updateReply(argReplyId);
+                });
+                argParentElement.appendChild(sendButton);
+
+                var cancelButton = document.createElement('input');
+                cancelButton.setAttribute('type', 'button');
+                cancelButton.setAttribute('value', 'CANCEL');
+                cancelButton.classList.add('controlButton');
+                cancelButton.addEventListener('click', function() {
+                    while(argParentElement.hasChildNodes()) {
+                        argParentElement.removeChild(argParentElement.firstChild);
+                    }
+                    replyTextarea.parentNode.replaceChild(replyContent, replyTextarea);
+                    setReplyModifyButton(argParentElement, argReplyId);
+                });
+                argParentElement.appendChild(cancelButton);
+            });
+            argParentElement.appendChild(buttonObj);
+
+            // 16-03) set delete button
+            buttonObj = document.createElement('input');
+            buttonObj.setAttribute('type', 'button');
+            buttonObj.setAttribute('value', 'DELETE');
+            buttonObj.classList.add('controlButton');
+
+            buttonObj.addEventListener('click', function() {
+                deleteReply(argReplyId);
+            });
+            argParentElement.appendChild(buttonObj);
+        }
+
+        // final. onload function
+        function onloadFunction() {
+            // 01) check login
+            checkLogin();
+
+            // 02) get Board
+            getBoard();
+
+            // 03) get reply list
+            getReply();
+        }
+    </script>
+</head>
+<body onload="onloadFunction()">
+    <div id="board_main">
+        <!-- title -->
+        <div id="title" class="title"></div>
+        <!-- writer info -->
+        <div id="writer" class="info_bar"></div>
+        <!-- views info -->
+        <div id="views" class="info_bar"></div>
+        <!-- update time info -->
+        <div id="update_time" class="info_bar"></div>
+        <!-- control bar -->
+        <div id="control_bar"></div>
+        <!-- content -->
+        <div id="content" class="content"></div>
+        <!-- write reply -->
+        <textarea id="reply_write"></textarea>
+        <!-- send reply -->
+        <div id="send_reply">SEND</div>
+        <!-- reply list -->
+        <table border='0' id="reply_table">
+            <thead>
+                <tr border="0">
+                    <td id="numOfReplies" class="ReplyTableHead">Number of replies: </td>
+                </tr>
+            </thead>
+            <tbody id="reply_list"></tbody>
+        </table>
+        <!-- back button -->
+        <div id="back">BACK</div>
+        <!-- next button -->
+        <div id="next" class="board_link">NEXT: </div>
+        <!-- prev button-->
+        <div id="prev" class="board_link">PREV: </div>
+    </div>
+</body>
+</html>

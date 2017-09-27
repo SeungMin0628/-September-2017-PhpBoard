@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Write Board</title>
+    <!-- CSS Style sheet -->
+    <style>
+        #write_main {
+            margin-left:            auto;
+            margin-right:           auto;
+            text-align:             center;
+        }
+
+        #title {
+            width:                  100px;
+            line-height:            50px;
+            font-size:              x-large;
+        }
+
+        #title_input {
+            width:                  700px;
+            height:                 50px;
+            line-height:            50px;
+            padding-left:           10px;
+            font-size:              x-large;
+        }
+
+        #content {
+            width:                  795px;
+            height:                 600px;
+            resize:                 none;
+            padding:                10px;
+            font-size:              large;
+            overflow-y:             scroll;
+        }
+    </style>
+    <!-- JavaScript -->
+    <script language="JavaScript">
+        /*
+         ## Write board ##
+         Content : write board
+         Creator : 2-WDJ 1401213 Seungmin Lee
+         Date    : September 21th, 2017
+         */
+
+        const WRITE_PHP_URL = location.protocol + '//' +
+            location.host + '/NewBoard/control/Control_BoardWriter.php';    // location of Control_BoardWriter.php
+
+        // 01. set default function
+        function defaultSetting() {
+            // 1) set variable
+            var cancelButton    = document.getElementById('cancel');
+            var writeButton     = document.getElementById('write');
+            var titleInput      = document.getElementById('title_input');
+
+            // 2) set default value at title
+            setDefaultTitle();
+
+            // 3) set function at elements
+            cancelButton.addEventListener('click', function() {
+               location.replace('list.html');
+            });
+            writeButton.addEventListener('click', insertBoard);
+        }
+
+        // 02. add event to set default title
+        function setDefaultTitle() {
+            // 01) set variable
+            var titleInput      = document.getElementById('title_input');
+            var date            = new Date();
+            var monthName = [
+                'Jan', 'Feb', 'Mar', 'Apr.', 'May', 'June',
+                'Jul', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'
+            ];
+
+            // 02) create default value
+            var year    = date.getFullYear();
+            var month   = monthName[date.getMonth()];
+            var day     = date.getDate();
+            var hour    = date.getHours();
+            var minute  = date.getMinutes();
+
+            var defaultTitle = `This board is written at ${month} ${day}, ${year} ${hour}:${minute}.`;
+
+            // 03) insert default value in title
+            titleInput.setAttribute('placeholder', defaultTitle);
+        }
+
+        // 03. insert board
+        function insertBoard() {
+            // 1) ready communicate
+            // 1-1) set variable
+            var xhr     = new XMLHttpRequest();
+            var title   = document.getElementById('title_input').value;
+            var content = document.getElementById('content').value;
+
+            // 1-2) when user didn't input title
+            if(title == '') {
+                title = document.getElementById('title_input').placeholder;
+            }
+
+            // 2) set function on communicate
+            xhr.onreadystatechange = function() {
+                if(xhr.status == 200 & xhr.readyState == 4) {
+                    if(xhr.responseText == 'true') {
+                        alert('Write Success!');
+                        location.replace('list.html');
+                    } else {
+                        alert('Write ERROR! please try again!');
+                    }
+                }
+            }
+
+            // 3) set send data
+            var message = 'type=write&title=' + encodeURIComponent(title) +
+                '&content=' + encodeURIComponent(content);
+
+            // 4) act communication
+            xhr.open('POST', WRITE_PHP_URL, true);
+            xhr.setRequestHeader("Content-Type",
+                "application/x-www-form-urlencoded;charset=UTF-8");         // set header
+            xhr.send(message);
+        }
+
+    </script>
+</head>
+<body onload="defaultSetting()">
+    <table id="write_main">
+        <thead>
+            <tr>
+                <td id="title">Title</td>
+                <td><input type="text" id="title_input" maxlength="30"></td>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td colspan="2">
+                <textarea id="content"></textarea>
+            </td></tr>
+        </tbody>
+        <tfoot>
+            <tr><td align="right" colspan="2">
+                <input type="button" id='cancel' value="Cancel">
+                <input type="button" id='write' value="Write">
+            </td></tr>
+        </tfoot>
+    </table>
+</body>
+</html>

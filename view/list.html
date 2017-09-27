@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Board_List</title>
+    <!-- CSS Style sheet -->
+    <style>
+        a {
+            color:              royalblue;
+        }
+
+        a:hover {
+            color:              red;
+            cursor:             pointer;
+        }
+
+        a:visited {
+            color:              rebeccapurple;
+        }
+
+        #Search_Bar {
+            margin-top:         10px;
+            margin-bottom:      10px;
+            border:             1px solid black;
+            width:              900px;
+            height:             50px;
+            line-height:        50px;
+            padding-left:       10px;
+        }
+
+        #List_Main {
+            text-align:         center;
+        }
+
+        .align_center {
+            margin-right:       auto;
+            margin-left:        auto;
+        }
+
+        .board_id {
+            width:              100px;
+        }
+
+        .title {
+            width:              400px;
+        }
+
+        .writer {
+            width:              150px;
+        }
+
+        .hits {
+            width:              100px;
+        }
+
+        .upload_time {
+            width:              150px;
+        }
+
+        .table_head {
+            border-top:         3px solid gray;
+            border-bottom:      2px solid gray;
+            height:             50px;
+            font-size:          large;
+        }
+
+        .table_body {
+            border-top:         1px solid silver;
+            border-bottom:      1px solid silver;
+            height:             30px;
+            line-height:        30px;
+            font-size:          medium;
+        }
+
+        .table_foot {
+            border-top:         2px solid dimgray;
+            border-bottom:      3px solid dimgray;
+            height:             50px;
+            line-height:        50px;
+            font-size:          large;
+        }
+
+        .pagination {
+            margin-left:        10px;
+            margin-right:       10px;
+        }
+    </style>
+    <!-- JavaScript -->
+    <script language="JavaScript">
+        /*
+                ## Board List ##
+                Content : show board list
+                Creator : 2-WDJ 1401213 Seungmin Lee
+                Date    : September 13th, 2017
+         */
+
+        const BOARD_PHP_URL = location.protocol + '//' +
+            location.host + '/NewBoard/control/Control_ListManager.php';    // location of Control_ListManager.php
+
+        // 01. get board list to server
+        function getBoardList() {
+            // 1) ready communicate
+            // 1-1) set variable
+            var xhr     = new XMLHttpRequest();
+            var boardList = document.getElementById('List_Body');
+            var numberList = document.getElementById('ListNumber');
+
+            // 1-2) reset page list and pagination list
+            while(boardList.hasChildNodes()) {
+                boardList.removeChild(boardList.firstChild);
+            }
+
+            while(numberList.hasChildNodes()) {
+                numberList.removeChild(numberList.firstChild);
+            }
+
+            // 2) set function on communicate
+            xhr.onreadystatechange = function() {
+                if(xhr.status == 200 & xhr.readyState == 4) {
+                    // 2-1) parse json code to board list array
+                    var listObj = JSON.parse(xhr.responseText);
+
+                    // 2-2) when receive board list data to server, fill up list and pagination
+                    if(listObj['boardList'].length > 0) {
+                        // 2-2-1) create tr element of each board object
+                        for (let temp in listObj['boardList']) {
+                            boardList.appendChild(makeTrElement(listObj['boardList'][temp], listObj['login']));
+                        }
+
+                        // 2-2-2) pagination
+                        pagination(listObj.maxList);
+                    }
+
+                    // 2-3) set write button
+                    writeButton(listObj['login']);
+                }
+            }
+
+            // 3) set send data
+            var message = 'page_number=' + page();
+
+            // when search mode is on, send search info
+            if(searchInfo()) {
+                message += '&search_type=' + searchInfo().type + '&search_content=' + searchInfo().content;
+            }
+
+            // 4) act communication
+            xhr.open('POST', BOARD_PHP_URL, true);
+            xhr.setRequestHeader("Content-Type",
+                "application/x-www-form-urlencoded;charset=UTF-8");         // set header
+            xhr.send(message);
+        }
+
+        // 2. receive board object and make tr element
+        function makeTrElement(boardObj, loginFlag) {
+            // 01) set variable
+            var createTr    = document.createElement('tr');
+            var createTd    = null;
+
+            // 02) create td element and put it on tr element
+            for(let temp in boardObj) {
+                createTd = document.createElement('td');
+
+                // add hyperlink at title if login
+                if (loginFlag && temp == 'title') {
+                    let aObj = document.createElement('a');
+                    aObj.innerHTML = boardObj[temp];
+                    aObj.setAttribute('href', 'board.html?board_id=' + boardObj['board_id']);
+                    createTd.appendChild(aObj);
+                } else {
+                    createTd.innerHTML = boardObj[temp];
+                }
+
+                createTd.classList.add(temp);
+                createTd.classList.add('table_body');
+
+                createTr.appendChild(createTd);
+            }
+
+            return createTr;
+        }
+
+        // 3. pagination
+        function pagination(maxList) {
+            // 1) set variable
+            var listTd      = document.getElementById('ListNumber');    // element to add pagination
+            var linkElement = null;                                     // create a Element
+            var pagination_start, pagination_end;                       // pagination start or end
+
+            // 2) create link
+            // 2-1) first and preview link if nowPage isn't 0
+            if(page() != 0) {
+                for(let i = 0; i < 2; i++) {
+                    linkElement = document.createElement('a');
+                    linkElement.classList.add('pagination');
+
+                    if(i == 0) {
+                        linkElement.innerHTML = 'FIRST';
+                        linkElement.addEventListener('click', function() {
+                            page(0);
+                            getBoardList();
+                        });
+                    } else {
+                        linkElement.innerHTML = 'PREV';
+                        linkElement.addEventListener('click', function() {
+                            page(page() - 1);
+                            getBoardList();
+                        });
+                    }
+
+                    listTd.appendChild(linkElement);
+                }
+            }
+
+            // 2-2) middle link
+            if(maxList < 5) {
+                // when the number of lists to display is less than 5
+                pagination_start = 0;
+                pagination_end = maxList;
+
+            } else if (page() > maxList - 4) {
+                // when the page viewed now are last
+                pagination_start = maxList - 5;
+                pagination_end = maxList;
+
+            } else if (page() < 3) {
+                // when the page viewed now are first
+                pagination_start = 0;
+                pagination_end = 5;
+
+            } else {
+                // else ....
+                pagination_start = page() - 2;
+                pagination_end = page() + 3;
+            }
+
+            for(let i = pagination_start; i < pagination_end; i++) {
+                if (i == page()) {
+                    linkElement = document.createElement('b');
+                } else {
+                    linkElement = document.createElement('a');
+                    linkElement.addEventListener('click', function() {
+                        page(i);
+                        getBoardList();
+                    });
+                }
+
+                linkElement.classList.add('pagination');
+                linkElement.innerHTML = i + 1;
+                listTd.appendChild(linkElement);
+            }
+
+            // 2-3) next and last link if nowPage isn't last page
+            if(page() != maxList - 1) {
+                for(let i = 0; i < 2; i++) {
+                    linkElement = document.createElement('a');
+                    linkElement.classList.add('pagination');
+
+                    if(i == 0) {
+                        linkElement.innerHTML = 'NEXT';
+                        linkElement.addEventListener('click', function() {
+                           page(page() + 1);
+                           getBoardList();
+                        });
+                    } else {
+                        linkElement.innerHTML = 'LAST';
+                        linkElement.addEventListener('click', function() {
+                            page(maxList - 1);
+                            getBoardList();
+                        });
+                    }
+
+                    listTd.appendChild(linkElement);
+                }
+            }
+        }
+
+        // 5. set page info
+        var page = (function () {
+            var nowPage = 0;
+            function getPage(setPage) {
+                if(arguments.length > 0) nowPage = setPage;
+                return nowPage;
+            }
+            return getPage;
+        })();
+
+        // 6. set search info
+        var searchInfo = (function () {
+            // 1) set default value
+            var flag = false;
+
+            // 2) define function
+            function getSearchInfo(searchMode) {
+                // when receive search mode flag, process algorithm
+                if(arguments.length > 0) {
+                    // 2-1) set variable
+                    var searchBarObj = document.getElementById('Search_Bar');
+
+                    // 2-2) when search mode is true
+                    if (searchMode) {
+                        // 2-2-1) set search data
+                        // when user didn't write search value
+                        if(document.getElementById('search_content').value == '') {
+                            alert('please write search value!');
+                            return;
+                        }
+
+                        flag = {
+                            type    : document.getElementById('search_type').value,
+                            content : document.getElementById('search_content').value
+                        };
+
+                        // 2-2-2) search mode off button set
+                        if(document.getElementById('search_off') == null) {
+                            // create button object
+                            var buttonObj = document.createElement('input');
+                            buttonObj.setAttribute('type', 'button');
+
+                            // set button attributes
+                            buttonObj.setAttribute('id', 'search_off');
+                            buttonObj.setAttribute('value', 'view All');
+                            buttonObj.addEventListener('click', function () {
+                                searchInfo(false);
+                            });
+
+                            // put button on web page
+                            searchBarObj.appendChild(buttonObj);
+                        }
+
+                    // 2-3) when search mode is false
+                    } else if (!searchMode) {
+
+                        // 2-3-1) search mode off
+                        flag = false;
+
+                        // 2-3-2) remove search off button
+                        searchBarObj.removeChild(document.getElementById('search_off'));
+                    }
+
+                    // 2-4) reload board list
+                    getBoardList();
+                }
+                return flag;
+            }
+
+            // 3) return value
+            return getSearchInfo;
+        })();
+
+        // 7. set login button
+        var writeButton = (function() {
+            // 01) set variable
+            // loginflag = variable to save existing login status
+            // checkflag = variable to receive login status to server
+
+            var loginFlag = false;
+
+            function setButton(checkFlag) {
+                // 1) set variable
+                var writeCell = document.getElementById('write');
+
+                // when checkflag is different of loginflag : login or logout
+                if(checkFlag != loginFlag) {
+                    if(checkFlag) {
+                        // 1) set variable
+                        var buttonObj = document.createElement('input');
+
+                        // 2) set attribute
+                        buttonObj.setAttribute('id', 'writeButton');
+                        buttonObj.setAttribute('type', 'button');
+                        buttonObj.setAttribute('value', 'Write');
+                        buttonObj.addEventListener('click', function() {
+                            location.replace('write.html');
+                        });
+
+                        // 3) append child to write cell
+                        writeCell.appendChild(buttonObj);
+
+                        loginFlag = true;
+                    } else {
+                        writeCell.removeChild(document.getElementById('writeButton'));
+                    }
+                }
+            }
+
+            return setButton;
+        })();
+    </script>
+</head>
+<body onload="getBoardList()">
+    <div id="Search_Bar" class="align_center">
+        <select id="search_type">
+            <option value="title">Title</option>
+            <option value="content">Content</option>
+            <option value="writer">Writer ID</option>
+            <option value="all">All</option>
+        </select>
+        <input type="text" id="search_content" maxlength="30">
+        <input type="button" id="search_on" value="search" onclick="searchInfo(true)">
+    </div>
+    <table id="List_Main" class='align_center' cellspacing="0">
+        <!-- thead : kinds -->
+        <thead>
+            <tr>
+                <td class="board_id table_head">No.</td>
+                <td class="title table_head">Title</td>
+                <td class="writer table_head">Writer</td>
+                <td class="hits table_head">Hits</td>
+                <td class="upload_time table_head">Upload Time</td>
+            </tr>
+        </thead>
+        <!-- tbody : Board List -->
+        <tbody id="List_Body">
+        </tbody>
+        <!-- tfoot : List numbering, Board Write Button -->
+        <tfoot id="List_Foot">
+                <td class='table_foot' id='ListNumber' colspan="4" class=""></td>
+                <td class="table_foot" id="write"></td>
+        </tfoot>
+    </table>
+
+</body>
+</html>
